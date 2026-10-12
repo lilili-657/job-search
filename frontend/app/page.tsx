@@ -4,6 +4,8 @@ import { useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { analyzeFit as requestAnalysis } from "../lib/api";
 import type { AnalyzeDebugResponse } from "../lib/api";
+import VoiceRecorder from "./voice-recorder";
+import { appendTranscript } from "../lib/audio-api";
 
 export default function Home() {
   const [jobUrl, setJobUrl] = useState<string>("");
@@ -11,6 +13,7 @@ export default function Home() {
   const [additionalNotes, setAdditionalNotes] = useState<string>("");
   const [result, setResult] = useState<AnalyzeDebugResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [recordingBusy, setRecordingBusy] = useState(false);
   const [error, setError] = useState("");
   const submitting = useRef(false);
   const [jobUrlError, setJobUrlError] = useState("");
@@ -38,7 +41,7 @@ export default function Home() {
 
   async function analyzeFit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (submitting.current) return;
+    if (submitting.current || recordingBusy) return;
 
     const urlMessage = jobUrl.trim() ? "" : "Enter a job URL.";
     const resumeMessage = resumeFiles.length === 0
@@ -127,17 +130,23 @@ export default function Home() {
             )}
           </div>
 
-          <div className="field">
-            <label htmlFor="additional-notes">Additional Notes</label>
-            <textarea
-              id="additional-notes"
-              rows={6}
-              value={additionalNotes}
-              onChange={(event) => setAdditionalNotes(event.target.value)}
+          <div className="notes-and-audio">
+            <div className="field">
+              <label htmlFor="additional-notes">Additional Notes</label>
+              <textarea
+                id="additional-notes"
+                rows={6}
+                value={additionalNotes}
+                onChange={(event) => setAdditionalNotes(event.target.value)}
+              />
+            </div>
+            <VoiceRecorder
+              onBusyChange={setRecordingBusy}
+              onTranscript={(text) => setAdditionalNotes((notes) => appendTranscript(notes, text))}
             />
           </div>
 
-          <button type="submit" disabled={isLoading}>
+          <button type="submit" disabled={isLoading || recordingBusy}>
             {isLoading ? "Submitting..." : "Analyze Fit"}
           </button>
         </fieldset>
