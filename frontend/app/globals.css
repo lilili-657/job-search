@@ -85,3 +85,24 @@ li span {
   min-width: 0;
   overflow-wrap: anywhere;
 }
+
+.notes-and-audio {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+  margin: 24px 0;
+}
+
+.notes-and-audio .field { margin: 0; }
+.voice-recorder { padding: 16px; border: 1px solid #b8bec5; border-radius: 4px; }
+.voice-recorder h2 { font-size: 1rem; margin: 0 0 8px; }
+.voice-recorder p { margin: 8px 0; font-size: 0.875rem; }
+.recording-duration { font-variant-numeric: tabular-nums; }
+.recording-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.voice-recorder audio { width: 100%; margin-top: 12px; }
+.voice-recorder dd { margin: 0 0 8px; overflow-wrap: anywhere; }
+.voice-recorder dt { font-weight: 600; }
+
+@media (max-width: 600px) {
+  .notes-and-audio { grid-template-columns: 1fr; }
+}
